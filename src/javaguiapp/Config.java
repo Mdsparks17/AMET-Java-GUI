@@ -53,7 +53,7 @@ public class Config {
 //    
     //DB Info, do not include completed in public release 
     public String username = "msparks";
-    public String password = "[5h#8!K5S*bv";
+    public String password = "";
     public String conn = "jdbc:mysql://tesla.epa.gov:3306?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
     
 }
