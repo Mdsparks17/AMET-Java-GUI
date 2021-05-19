@@ -1,8 +1,17 @@
+//##############################################################################
+//  Abstracts the making of a new file, used primarily for run_info.R
+//  
+//   
+//
+//  AUTHOR: Michael Dillon Sparks
+//##############################################################################
 package javaguiapp;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class NewFile {
     File file = null;
@@ -59,6 +68,10 @@ public class NewFile {
             fileWriter.write(text + "\n");
             return true;
         } catch (IOException e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            String error = sw.toString();
             System.out.println("File writer does not exist");
             return false;
         }
@@ -73,5 +86,10 @@ public class NewFile {
             System.out.println("File Writer does not exist");
             return false;
         }
+    }
+    
+    private void errorWindow(String title, String message) {
+        ErrorWindow ew = new ErrorWindow(title, message);
+        ew.setVisible(true);
     }
 }

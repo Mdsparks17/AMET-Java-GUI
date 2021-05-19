@@ -5,6 +5,13 @@
 //
 //  AUTHOR: Michael Dillon Sparks
 //##############################################################################
+
+//TIPS for Navigating this program:
+//For Netbeans IDE, te command for automatically compressing all chunks of code is <ctrl shift +>, this is very useful for evaluating the work flow
+//The design can be found by clicking the "Design" tab above, this give you a visual demo and a drag and drop interface to edit what the user sees
+//The key to seeing how information flows is by looking at runProgramButtonActionPerformed(), as it calls the main functions of the program
+//For any questions, try contacting mdsparks17@gmail.com
+
 package javaguiapp;
 
 import javaguiapp.AdvancedForms.SpatialPlotOptionsForm;
@@ -22,79 +29,84 @@ import java.awt.Cursor;
 import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.Random;
+import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.*;
 
 public class AMETForm extends javax.swing.JFrame {    
-    //User inputed Variables that change depending on the environment 
-    //Note: 4 backslashes are used because 1) java requires each backslash to be doubled and 2) R requires each backslash to be doubled, hence needed 1*2*2=4 backslashes
-    public String cache_amet = "C:\\\\Users\\\\Administrator\\\\OneDrive\\\\Profile\\\\Documents\\\\NetBeansProjects\\\\JavaGUIApp\\\\cache";
-    public String amet_base = "C:\\\\Users\\\\Administrator\\\\OneDrive\\\\Profile\\\\Documents\\\\AMET-master";
-    public String mysql_config = "C:\\\\Users\\\\Administrator\\\\OneDrive\\\\Profile\\\\Documents\\\\AMET-master\\\\configure\\\\amet-config.R";
-    public String amet_database = "tesla.epa.gov";
-    public String rscript = "C:\\\\Users\\\\Administrator\\\\OneDrive\\\\Profile\\\\Documents\\\\R\\\\R-4.0.4\\\\bin\\\\rscript.exe";
- 
+    Config config = new Config();
+
     //Variable instantiation and setting default values
     public String run_program = "";
-    public String query = "\"\""; //AMETForm
-    public String dbase = "\"\""; //AMETForm
-    public String run_name1 = "\"\""; //AMETForm
-    public String run_name2 = "\"\""; //AMETForm
-    public String run_name3 = "\"\""; //AMETForm
-    public String run_name4 = "\"\""; //AMETForm
-    public String run_name5 = "\"\""; //AMETForm
-    public String run_name6 = "\"\""; //AMETForm
-    public String run_name7 = "\"\""; //AMETForm
-    public String species_in = "\"\""; //AMETForm
-    public String custom_species = "\"\""; //AdvancedSpeciesForm
-    public String custom_species_name = "\"\""; //AdvancedSpeciesForm
-    public String custom_units = "\"\""; //AdvancedSpeciesForm
-    public String inc_csn = "\"\""; //AMETForm
-    public String inc_improve = "\"\""; //AMETForm
-    public String inc_castnet = "\"\""; //AMETForm
-    public String inc_castnet_hr = "\"\""; //AMETForm
-    public String inc_castnet_daily = "\"\""; //AMETForm
-    public String inc_castnet_drydep = "\"\""; //AMETForm
-    public String inc_capmon = "\"\""; //AMETForm
-    public String inc_naps = "\"\""; //AMETForm
-    public String inc_naps_daily_o3 = "\"\""; //AMETForm
-    public String inc_nadp = "\"\""; //AMETForm
-    public String inc_airmon_dep = "\"\""; //AMETForm
-    public String inc_amon = "\"\""; //AMETForm
-    public String inc_aqs_hourly = "\"\""; //AMETForm
-    public String inc_aqs_daily_o3 = "\"\""; //AMETForm
-    public String inc_aqs_daily = "\"\""; //AMETForm
-    public String inc_aqs_daily_oaqps = "\"\""; //AMETForm
-    public String inc_aqs_daily_pm = "\"\""; //AMETForm
-    public String inc_search = "\"\""; //AMETForm
-    public String inc_search_daily = "\"\""; //AMETForm
-    public String inc_aeronet = "\"\""; //AMETForm
-    public String inc_fluxnet = "\"\""; //AMETForm
-    public String inc_noaa_esrl_o3 = "\"\""; //AMETForm
-    public String inc_toar = "\"\""; //AMETForm
-    public String inc_mdn = "\"\""; //AMETForm
-    public String inc_tox = "\"\""; //AMETForm
-    public String inc_mod = "\"\""; //AMETForm
-    public String inc_admn = "\"\""; //AMETForm
-    public String inc_aganet = "\"\""; //AMETForm
-    public String inc_airbase_hourly = "\"\""; //AMETForm
-    public String inc_airbase_daily = "\"\""; //AMETForm
-    public String inc_aurn_hourly = "\"\""; //AMETForm
-    public String inc_aurn_daily = "\"\""; //AMETForm
-    public String inc_emep_hourly = "\"\""; //AMETForm
-    public String inc_emep_daily = "\"\""; //AMETForm
-    public String inc_emep_daily_o3 = "\"\""; //AMETForm
-    public String inc_calnex = "\"\""; //AMETForm
-    public String inc_soas = "\"\""; //AMETForm
-    public String inc_special = "\"\""; //AMETForm
-    public String dates = "\"\""; //AMETForm
-    public String averaging = "\"n\""; //AMETForm
+    public String query = "\"\""; 
+    public String dbase = "\"\""; 
+    public String run_name1 = "\"\""; 
+    public String run_name2 = "\"\""; 
+    public String run_name3 = "\"\""; 
+    public String run_name4 = "\"\""; 
+    public String run_name5 = "\"\""; 
+    public String run_name6 = "\"\""; 
+    public String run_name7 = "\"\""; 
+    public String species_in = "\"\""; 
+    public String custom_species = "\"\""; 
+    public String custom_species_name = "\"\""; 
+    public String custom_units = "\"\""; 
+    public String inc_csn = "\"\""; 
+    public String inc_improve = "\"\""; 
+    public String inc_castnet = "\"\""; 
+    public String inc_castnet_hr = "\"\""; 
+    public String inc_castnet_daily = "\"\""; 
+    public String inc_castnet_drydep = "\"\"";
+    public String inc_capmon = "\"\""; 
+    public String inc_naps = "\"\""; 
+    public String inc_naps_daily_o3 = "\"\""; 
+    public String inc_nadp = "\"\"";
+    public String inc_airmon_dep = "\"\"";
+    public String inc_amon = "\"\""; 
+    public String inc_aqs_hourly = "\"\""; 
+    public String inc_aqs_daily_o3 = "\"\"";
+    public String inc_aqs_daily = "\"\"";
+    public String inc_aqs_daily_oaqps = "\"\"";
+    public String inc_aqs_daily_pm = "\"\""; 
+    public String inc_search = "\"\"";
+    public String inc_search_daily = "\"\""; 
+    public String inc_aeronet = "\"\"";
+    public String inc_fluxnet = "\"\"";
+    public String inc_noaa_esrl_o3 = "\"\"";
+    public String inc_toar = "\"\""; 
+    public String inc_mdn = "\"\""; 
+    public String inc_tox = "\"\"";
+    public String inc_mod = "\"\"";
+    public String inc_admn = "\"\"";
+    public String inc_aganet = "\"\""; 
+    public String inc_airbase_hourly = "\"\""; 
+    public String inc_airbase_daily = "\"\""; 
+    public String inc_aurn_hourly = "\"\""; 
+    public String inc_aurn_daily = "\"\""; 
+    public String inc_emep_hourly = "\"\""; 
+    public String inc_emep_daily = "\"\""; 
+    public String inc_emep_daily_o3 = "\"\""; 
+    public String inc_calnex = "\"\""; 
+    public String inc_soas = "\"\""; 
+    public String inc_special = "\"\""; 
+    public String dates = "\"\""; 
+    public String averaging = "\"n\""; 
     public String site = "\"\"";
     public String state = "\"\"";
     public String rpo = "\"\"";
@@ -139,7 +151,7 @@ public class AMETForm extends javax.swing.JFrame {
     public String inc_median_lines = "\"\"";
     public String remove_mean = "\"\"";
     public String overlap_boxes = "\"\"";
-    public String avg_func = "mean";        //TODO
+    public String avg_func = "mean";
     public String avg_func_name = "\"mean\"";
     public String stat_func = "\"\"";
     public String line_width = "\"1\"";
@@ -207,11 +219,20 @@ public class AMETForm extends javax.swing.JFrame {
     public String lon2 = "";
     public String zeroprecip = "\"\"";
     public String pid = "\"\"";
+    public String ametptype = "\"\"";
     
     //file naming info
     public String project_id = "";
     public String species = "";
     public String pidx = "";
+    
+    //check helper variable
+    public boolean isNetworkSelectedTemp = false;
+    public boolean isNetworkSelected = false;
+    public boolean gSiteSelector = false;
+    
+    //site selector
+    public File siteFile;
     
     
 //##############################################################################
@@ -220,14 +241,22 @@ public class AMETForm extends javax.swing.JFrame {
     //creates a new AMETForm
     public AMETForm() {
         //Sets up how the aplication looks
-        
         try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-            SwingUtilities.updateComponentTreeUI(this);
-        } catch (Exception e) {
-            System.out.println("Look and feel issue");
+            UIManager.setLookAndFeel(
+            UIManager.getSystemLookAndFeelClassName());
+        } 
+        catch (UnsupportedLookAndFeelException e) {
+           errorWindow("Graphics Error1", "There was a problem with loading the 'look and feel' component.");
         }
-        
+        catch (ClassNotFoundException e) {
+           errorWindow("Graphics Error2", "There was a problem with loading the 'look and feel' component.");
+        }
+        catch (InstantiationException e) {
+           errorWindow("Graphics Error3", "There was a problem with loading the 'look and feel' component.");
+        }
+        catch (IllegalAccessException e) {
+           errorWindow("Graphics Error4", "There was a problem with loading the 'look and feel' component.");
+        }
         
         //Create the AMET Form
         initComponents();
@@ -259,14 +288,15 @@ public class AMETForm extends javax.swing.JFrame {
             }
             db.closeDBConnection(); 
         } catch (SQLException e) {
-            System.out.println("Hello");
-        }
-        
+            errorWindow("SQL Exception", "This error typically occurs when the application is not getting any info from the database. This could be because it cannot find the database on the network, the login credintials were incorrect, or the path to the database was incorrect.");
+        } catch (NullPointerException e) {
+            errorWindow("SQL/Null Pointer Exception", "This error typically occurs when the application is not getting any info from the database. This could be because it cannot find the database on the network, the login credintials were incorrect, or the path to the database was incorrect.");
+        } 
     }
     
     //Saves and formats variables
     public void saveVariables() {
-        figdir = "\"" + cache_amet + "\"";
+        figdir = "\"" + config.cache_amet + "\"";
         dbase = databaseSpecificationComboBox.getSelectedItem().toString();
         run_name1 = textFormat(projectComboBox1.getSelectedItem().toString());
         run_name2 = textFormat(projectComboBox2.getSelectedItem().toString());
@@ -277,6 +307,7 @@ public class AMETForm extends javax.swing.JFrame {
         run_name7 = textFormat(projectComboBox7.getSelectedItem().toString());
         species_in = textFormat(speciesComboBox.getSelectedItem().toString());
         species = speciesComboBox.getSelectedItem().toString();
+        isNetworkSelectedTemp = false; //sets temp false
         inc_csn = checkBoxFormat(csnCheckBox);
         inc_improve = checkBoxFormat(improveCheckBox);
         inc_castnet = checkBoxFormat(castnetCheckBox);
@@ -315,6 +346,7 @@ public class AMETForm extends javax.swing.JFrame {
         inc_calnex = checkBoxFormat(calnexCheckBox);
         inc_soas = checkBoxFormat(soasCheckBox);
         inc_special = checkBoxFormat(specialCheckBox);
+        isNetworkSelected = isNetworkSelectedTemp; //saves temp value, using this instead of a check function is much faster
         discovaq = textFormat(discoverWindowsComboBox.getSelectedItem().toString());
         averaging = textFormat(temporalAveragingComboBox.getSelectedItem().toString());
         clim_reg = textFormat(climateRegionComboBox.getSelectedItem().toString());
@@ -446,6 +478,10 @@ public class AMETForm extends javax.swing.JFrame {
         pidx = String.valueOf(rand.nextInt(1000000));
         pid = "\"" + pidx + "\"";
         
+        //ametptype formatting, details if PNGs are produced
+        if (PNGCheckBox.isSelected()) {
+            ametptype = "\"both\"";
+        } 
         
 //        inc_valid_amon; //does not exist?
 //        stat_func; //does not exist?
@@ -459,19 +495,34 @@ public class AMETForm extends javax.swing.JFrame {
     }
     
     //Checks variables for common errors
-    public void checkVariables() {
-        //TODO
+    public boolean checkVariables() {
+        boolean hasError = false;
+        String error = "You must provide a response for the following fields: ";
         //Check if database is selected
+        if (dbase.equals("Choose a Database")) { error = error + "\n- Database"; hasError = true; }
         //Check if project is selected
-        //Check if more than one area selection is used
+        if (project_id.equals("<Select a Database First>") || project_id.isEmpty() || project_id.equals("Choose a Project")) { error = error + "\n- Project"; hasError = true; }
         //Check if species is selected
-        //Check if time is conflicting
+        if (species.equals("<Select a Project First>") || species.equals("Choose a Species")) { error = error + "\n- Species"; hasError = true; }
+        //Check if a network is selected
+        if (!isNetworkSelected) { error = error + "\n- Network"; hasError = true; }
         //Check if program is selected
+        if (run_program.equals("Choose AMET Script to Execute") || run_program.isEmpty()) { error = error + "\n- Program"; hasError = true; }
+       
+        //Check if time is conflicting
+        
+        if (hasError) {
+            errorWindow("Input Error", error);
+            return true;
+        } else {
+            return false;
+        }
     }
     
     //Creates run_info.r file used by r scripts
     public void createRunInfo() {
-        NewFile file = new NewFile(true, "./cache/run_info.r");
+        System.out.println(config.cache_amet + "/" + "run_info.R");
+        NewFile file = new NewFile(true, config.cache_amet + "/" + "run_info.R");
         file.openWriter();
         file.writeTo(""
                 + "### Indicate this as a MET database query ###\n"
@@ -830,7 +881,7 @@ public class AMETForm extends javax.swing.JFrame {
                 + "species <- gsub(\"_ob\",\"\",species)\n"
                 + "total_networks<-length(network_names)\n"
                 + "network1 <-network_names[[1]]\n"
-                + "ametptype <- \"both\"\n"
+                + "ametptype <-" + ametptype +"\n"
         );
         file.closeWriter();
     }
@@ -840,113 +891,165 @@ public class AMETForm extends javax.swing.JFrame {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         
         //Command executed in the windows cmd prompt
-        Process p = null;
-        try {
-            System.out.println(run_program);
-            p = Runtime.getRuntime().exec("cmd /c"
-                    + "set AMETBASE=" + amet_base + "&& "
-                    + "set AMETRINPUT=" + cache_amet + "\\run_info.R&& "
-                    + "set AMET_OUT=" + cache_amet + "&& "
-                    + "set MYSQL_CONFIG=" + mysql_config + "&& "
-                    + "set AMET_DATABASE=" + amet_database + "&& "
-                    + rscript +" C:/Users/Administrator/OneDrive/Profile/Documents/AMET-master/R_analysis_code/" + run_program
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         
-        //Prints cmd output if failed
-        try {
-            p.waitFor();
-            final int exitValue = p.waitFor();
-            if (exitValue == 0)
-                System.out.println("Successfully executed the command: ");
-            else {
-                System.out.println("Failed to execute the following command: due to the following error(s):");
-                try (final BufferedReader b = new BufferedReader(new InputStreamReader(p.getErrorStream()))) {
-                    String line;
-                    if ((line = b.readLine()) != null)
-                        System.out.println(line);
-                } catch (final IOException e) {
-                    e.printStackTrace();
-                }                
+            Process p = null;
+            String os = System.getProperty("os.name").toLowerCase();
+            System.out.println(os);
+            if (os.contains("win")) {
+                try {
+                    p = Runtime.getRuntime().exec("cmd /c"
+                            + "set AMETBASE=" + config.amet_base + "&& "
+                            + "set AMETRINPUT=" + config.cache_amet + "\\run_info.R&& "
+                            + "set AMET_OUT=" + config.cache_amet + "&& "
+                            + "set MYSQL_CONFIG=" + config.mysql_config + "&& "
+                            + "set RSTUDIO_PANDOC=" + config.pandoc + "&& "
+                            + config.rscript + " " + config.run_analysis + run_program
+                    );
+                    //error message
+                    StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR");
+                    //output message
+                    StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), "OUTPUT");
+
+                    errorGobbler.start();
+                    outputGobbler.start();
+
+                    //any error?
+                    int exitVal = p.waitFor();
+                    System.out.println("ExitValue: " + exitVal);
+                    
+                } catch (IOException e) {
+                    errorWindow("IOExcpetion", "There was a problem in running R_analysis_code through the command prompt. This is usually a problem caused by incorect paths in the config file"); 
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+                
+            } else {
+                try {
+                    System.out.println("linux");
+                    p = Runtime.getRuntime().exec(new String[]{"csh","-c",""
+                            + "setenv AMETBASE " + config.amet_base + "&& "
+                            + "setenv AMETRINPUT " + config.cache_amet + "/run_info.R&& "
+                            + "setenv AMET_OUT " + config.cache_amet + "&& "
+                            + "setenv MYSQL_CONFIG " + config.mysql_config + "&& "
+                            + "setenv RSTUDIO_PANDOC " + config.pandoc + "&& "
+                            + config.rscript + " " + config.run_analysis + run_program
+                    });
+                } catch (IOException e) {
+                    errorWindow("IOExcpetion", "There was a problem in running R_analysis_code through the command prompt. This is usually a problem caused by incorect paths in the config file"); 
+                }
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+            
+            System.out.println("Command Pushed");
+            
+            
+            
+            //Prints cmd output if failed
+//        try {
+//            p.waitFor();
+//            final int exitValue = p.waitFor();
+//            if (exitValue == 0)
+//                System.out.println("Successfully executed the command: ");
+//            else {
+//                System.out.println("Failed to execute the following command: due to the following error(s):");
+//                try (final BufferedReader b = new BufferedReader(new InputStreamReader(p.getErrorStream()))) {
+//                    String line;
+//                    if ((line = b.readLine()) != null)
+//                        System.out.println(line);
+//                } catch (final IOException e) {
+//                    e.printStackTrace();
+//                }                
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        
+        System.out.println("End Execute Program");
+        
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
     
     //Displays the output
     public void outputWindow() {
-        String prefix = "./cache/" + project_id + "_" + species + "_" + pidx + "_";
-        System.out.println(prefix);
+        String prefix =  config.cache_amet + "/" + project_id + "_" + species + "_" + pidx + "_";
+        String prefix2 = config.cache_amet + "/" + project_id + "_" + pidx + "_";
+        OutputWindow output = new OutputWindow(this);
+        
         System.out.println(run_program);
-        OutputWindow output = new OutputWindow();
+        System.out.println(prefix);
+        System.out.println(prefix2);
+        
         switch(run_program) {
-            case "R_Stats_Plots.R":
-                break;
-//            case "R_Stats_Plots.R": //???
-//                break;
-            case "AQ_Raw_Data.R":
-                break;
-            case "AQ_Scatterplot.R":
+//Scatterplot 
+            case "AQ_Scatterplot.R": //Multiple Networks Model/Ob Scatterplot (select stats only)
                 output.newFile(prefix + "scatterplot.pdf", "Mod/Ob Scatterplot (PDF)");
                 output.newFile(prefix + "scatterplot.png", "Mod/Ob Scatterplot (PNG)");
                 output.newFile(prefix + "scatterplot.csv", "Scatterplot Data (CSV)");
                 break;
-            case "AQ_Scatterplot_single.R":
+            case "AQ_Scatterplot_ggplot.R": //GGPlot Scatterplot (multi network, single run)
+                output.newFile(prefix + "scatterplot_ggplot.pdf", "Scatterplot (PDF)");
+                output.newFile(prefix + "scatterplot_ggplot.png", "Scatterplot (PNG)");
+                output.newFile(prefix + "scatterplot_ggplot.csv", "Scatterplot Data (CSV)");
+                break;
+            case "AQ_Scatterplot_plotly.R": //Interactive Multiple Network Scatterplot
+                output.newFile(prefix + "scatterplot.html", "Mod/Ob Scatterplot (HTML)");
+                output.newFile(prefix + "scatterplot.csv", "Scatterplot Data (CSV)");
+                break;
+            case "AQ_Scatterplot_multisim_plotly.R": //Interactive Multiple Simulation Scatterplot
+                output.newFile(prefix + "scatterplot_multi.html", "Mod/Ob Scatterplot (HTML)");
+                output.newFile(prefix + "scatterplot_multi.csv", "Scatterplot Data (CSV)");
+                break;
+            case "AQ_Scatterplot_single.R": //Single Network Model/Ob Scatterplot (includes all stats)
                 output.newFile(prefix + "scatterplot_single.pdf", "Mod/Ob Scatterplot (PDF)");
                 output.newFile(prefix + "scatterplot_single.png", "Mod/Ob Scatterplot (PNG)");
                 output.newFile(prefix + "scatterplot_single.csv", "Scatterplot Data (CSV)");
                 break;
-            case "AQ_Scatterplot_density.R":
+            case "AQ_Scatterplot_density.R": //Density Scatterplot (single run, single network)
                 output.newFile(prefix + "scatterplot_density.pdf", "Mod/Ob Scatterplot (PDF)");
                 output.newFile(prefix + "scatterplot_density.png", "Mod/Ob Scatterplot (PNG)");
                 output.newFile(prefix + "scatterplot_density.csv", "Scatterplot Data (CSV)");
                 break;
-            case "AQ_Scatterplot_log.R":
-                output.newFile(prefix + "scatterplot_log.pdf", "Model/Ob Log-Log Scatterplot (PDF)");
-                output.newFile(prefix + "scatterplot_log.png", "Model/Ob Log-Log Scatterplot (PNG)");
-                output.newFile(prefix + "scatterplot_log.csv", "Scatterplot Data (CSV File)");
+            case "AQ_Scatterplot_density_ggplot.R": //GGPlot Density Scatterplot (single run, single network)
+                output.newFile(prefix + "scatterplot_density_ggplot.pdf", "Mod/Ob Scatterplot (PDF)</a>");
+                output.newFile(prefix + "scatterplot_density_ggplot.png", "Mod/Ob Scatterplot (PNG)");
+                output.newFile(prefix + "scatterplot_density_ggplot.csv", "Scatterplot Data (CSV");
                 break;
-            case "AQ_Scatterplot_mtom.R":
+            case "AQ_Scatterplot_mtom.R": //Model/Model Scatterplot (multiple networks)
                 output.newFile(prefix + "scatterplot_mtom.pdf", "Model/Model Scatterplot (PDF)");
                 output.newFile(prefix + "scatterplot_mtom.png", "Model/Model Scatterplot (PNG)");
                 break;
-            case "AQ_Scatterplot_percentiles.R":
+            case "AQ_Scatterplot_mtom_density.R": //Model/Model Density Scatterplot (single network)
+                output.newFile(prefix + "scatterplot_mtom_density.pdf", "MtoM Density Scatterplot (PDF)");
+                output.newFile(prefix + "scatterplot_mtom_density.png", "MtoM Density Scatterplot (PNG)");
+                break;
+            case "AQ_Scatterplot_percentiles.R": //Scatterplot of Percentiles (single network, single run)
                 output.newFile(prefix + "scatterplot_percentiles.pdf", "Percentile Scatterplot (PDF)");
                 output.newFile(prefix + "scatterplot_percentiles.png", "Percentile Scatterplot (PNG)");
                 break;
-            case "AQ_Scatterplot_soil.R":
-                output.newFile(prefix + "scatterplot_soil.pdf", "Model/Ob Soil Scatterplot (PDF)");
-                output.newFile(prefix + "scatterplot_soil.png", "Model/Ob Soil Scatterplot (PNG)");
-                break;
-            case "AQ_Scatterplot_skill.R":
+            case "AQ_Scatterplot_skill.R": //Ozone Skill Scatterplot (single network, mult runs)
                 output.newFile(prefix + "scatterplot_skill.pdf", "Skill Plot (PDF)");
                 output.newFile(prefix + "scatterplot_skill.png", "Skill Plot (PNG)");
                 output.newFile(prefix + "scatterplot_skill.csv", "Skill Plot Data (CSV)");
                 break;
-            case "AQ_Scatterplot_bins.R":
+            case "AQ_Scatterplot_bins.R": //Binned MB &amp; RMSE Scatterplots (single net., mult. run)
                 output.newFile(prefix + "scatterplot_bins.png", "Mean Bias Plot (PNG)");
                 output.newFile(prefix + "scatterplot_bins.pdf", "Mean Bias Plot (PDF)");
                 output.newFile(prefix + "scatterplot_bins.csv", "Raw Data File (CSV)");
                 break;
-            case "AQ_Scatterplot_multi.R":
+            case "AQ_Scatterplot_bins_plotly.R": //Interactive Binned Plot (single net., mult. run)
+                output.newFile(prefix + "scatterplot_bins.html", "Binned Plot (HTML)");
+                output.newFile(prefix + "scatterplot_bins.csv", "Raw Data File (CSV)");
+                break;
+            case "AQ_Scatterplot_multi.R": //Multi Simulation Scatter plot (single network, mult runs)
                 output.newFile(prefix + "scatterplot.pdf", "Scatterplot (PDF)");
                 output.newFile(prefix + "scatterplot.png", "Scatterplot (PNG)");
                 output.newFile(prefix + "scatterplot.csv", "Scatterplot Data (CSV)");
                 break;
-            case "AQ_Soccerplot.R":
-                output.newFile(prefix + "soccerplot.png", "Soccergoal Plot (PNG)");
-                output.newFile(prefix + "soccerplot.pdf", "Soccergoal Plot (PDF)");
+            case "AQ_Scatterplot_soil.R": //Soil Scatter plot (single network, mult runs)
+                output.newFile(prefix + "scatterplot_soil.pdf", "Model/Ob Soil Scatterplot (PDF)");
+                output.newFile(prefix + "scatterplot_soil.png", "Model/Ob Soil Scatterplot (PNG)");
                 break;
-            case "AQ_Bugleplot.R":
-                output.newFile(prefix + "bugleplot_bias.png", "Bugle Plot Bias (PNG)");
-                output.newFile(prefix + "bugleplot_error.png", "Bugle Plot Error (PNG)");
-                output.newFile(prefix + "bugleplot_error.pdf", "Bugle Plot Error (PDF)");
-                break;
-            case "AQ_Timeseries.R":
+//TimeSeries Plots
+            case "AQ_Timeseries.R": //Time-Series Plot (single network, multiple sites averages)
                 output.newFile(prefix + "bias_timeseries.pdf", "Time Series Plot (PDF)(Bias)");
                 output.newFile(prefix + "rmse_timeseries.pdf", "Time Series Plot (PDF)(RMSE)");
                 output.newFile(prefix + "corr_timeseries.pdf", "Time Series Plot (PDF)(Corr)");
@@ -955,91 +1058,75 @@ public class AMETForm extends javax.swing.JFrame {
                 output.newFile(prefix + "corr_timeseries.png", "Time Series Plot (PNG)(Corr)");
                 output.newFile(prefix + "timeseries.csv", "Timeseries Data (CSV)");
                 break;
-            case "AQ_Timeseries_multi_networks.R":
+            case "AQ_Timeseries_dygraph.R": //Dygraph Time-series Plot
+                output.newFile(prefix + "timeseries_dygraph.html", "Time Series (HTML)");
+                output.newFile(prefix + "timeseries_dygraph.csv", "Timeseries Data (CSV)");
+                break;
+            case "AQ_Timeseries_plotly.R": //Plotly Multi-simulation Timeseries
+                output.newFile(prefix + "timeseries.html", "Time Series (HTML)");
+                output.newFile(prefix + "timeseries.csv", "Timeseries Data (CSV)");
+                break;
+            case "AQ_Timeseries_networks_plotly.R": //Plotly Multi-network Timeseries
+                output.newFile(prefix + "timeseries.html", "Time Series (HTML)");
+                output.newFile(prefix + "timeseries.csv", "Timeseries Data (CSV)");
+                break;
+            case "AQ_Timeseries_multi_networks.R": //Multi-Network Time-series Plot (mult. net., single run
                 output.newFile(prefix + "timeseries.pdf", "Timeseries Plot (PDF)");
                 output.newFile(prefix + "timeseries.png", "Timeseries Plot (PNG)");
                 output.newFile(prefix + "timeseries.csv", "Timeseries Data (CSV)");
                 break;
-            case "AQ_Timeseries_MtoM.R":
+            case "AQ_Timeseries_multi_species.R": //Multi-Species Time-series Plot (mult. species, single run)
+                output.newFile(prefix2 + "timeseries.pdf", "Timeseries Plot (PDF)");
+                output.newFile(prefix2 + "timeseries.png", "Timeseries Plot (PNG)");
+                output.newFile(prefix2 + "timeseries.csv", "Timeseries Data (CSV)");
+                break;
+            case "AQ_Timeseries_MtoM.R": //Model-to-Model Time-series Plot (single net., multi run)
                 output.newFile(prefix + "timeseries_mtom.pdf", "Timeseries Plot (PDF)");
                 output.newFile(prefix + "timeseries_mtom.png", "Timeseries Plot (PNG)");
                 output.newFile(prefix + "timeseries_mtom.csv", "Timeseries Data (CSV)");
                 break;
-            case "AQ_Boxplot_Hourly.R":
-                output.newFile(prefix + "boxplot_hourly.pdf", "Boxplot (PDF format)");
-                output.newFile(prefix + "boxplot_hourly.png", "Boxplot (PNG format)");
-                output.newFile(prefix + "boxplot_data.csv", "Median Data (CSV format)");
-                break;
-            case "AQ_Boxplot_MDA8.R":
-                output.newFile(prefix + "boxplot_MDA8.pdf", "MDA8 Boxplot (PDF)");
-                output.newFile(prefix + "boxplot_MDA8.png", "MDA8 Boxplot (PNG)");
-                break;
-            case "AQ_Boxplot.R":
-                output.newFile(prefix + "boxplot_all.png", "Boxplot (PNG)");
-                output.newFile(prefix + "boxplot_all.pdf", "Boxplot (PDF)");
-                output.newFile(prefix + "boxplot_bias.png", "Bias Boxplot (PNG)");
-                output.newFile(prefix + "boxplot_bias.pdf", "Bias Boxplot (PDF)");
-                output.newFile(prefix + "boxplot_norm_bias.png", "Normalized Bias Boxplot (PNG)");
-                output.newFile(prefix + "boxplot_norm_bias.pdf", "Normalized Bias Boxplot (PDF)");
-                break;
-            case "AQ_Boxplot_DofW.R":
-                output.newFile(prefix + "boxplot_dow.pdf", "Day of Week Boxplot (PDF)");
-                output.newFile(prefix + "boxplot_dow.png", "Day of Week Boxplot (PNG)");
-                break;
-            case "AQ_Boxplot_Roselle.R":
-                output.newFile(prefix + "boxplot_roselle.png", "Roselle Boxplot (PNG)");
-                output.newFile(prefix + "boxplot_bias_roselle.png", "Roselle Boxplot Bias (PNG)");
-                output.newFile(prefix + "boxplot_roselle.pdf", "Roselle Boxplot (PDF)");
-                output.newFile(prefix + "boxplot_bias_roselle.pdf", "Roselle Boxplot Bias (PDF)");
-                break;
-            case "AQ_Stacked_Barplot.R":
-                output.newFile(prefix + "stacked_barplot.png", "Stacked Barplot (PNG)");
-                output.newFile(prefix + "stacked_barplot.pdf", "Stacked Barplot (PDF)");
-                output.newFile(prefix + "stacked_barplot.csv", "Barplot Data (CSV)");
-                break;
-            case "AQ_Stacked_Barplot_panel.R":
-                output.newFile(prefix + "stacked_barplot_panel.png", "Stacked Barplot (PNG)");
-                output.newFile(prefix + "stacked_barplot_panel.pdf", "Stacked Barplot (PDF)");
-                output.newFile(prefix + "stacked_barplot_panel.csv", "Barplot Data (CSV)");
-                break;
-            case "AQ_Stacked_Barplot_panel_AE6.R":
-                output.newFile(prefix + "stacked_barplot_panel_AE6.png", "Stacked Barplot (PNG)");
-                output.newFile(prefix + "stacked_barplot_panel_AE6.pdf", "Stacked Barplot (PDF)");
-                output.newFile(prefix + "stacked_barplot_panel_AE6.csv", "Barplot Data (CSV)");
-                break;
-            case "AQ_Stacked_Barplot_AE6.R":
-                output.newFile(prefix + "stacked_barplot_AE6.png", "Stacked Barplot (PNG)");
-                output.newFile(prefix + "stacked_barplot_AE6.pdf", "Stacked Barplot (PDF)");
-                output.newFile(prefix + "stacked_barplot_AE6.csv", "Barplot Data (CSV");
-                break;
-            case "AQ_Stacked_Barplot_panel_AE6_multi.R":
-                output.newFile(prefix + "stacked_barplot_panel_AE6.png", "Stacked Barplot (PNG)");
-                output.newFile(prefix + "stacked_barplot_panel_AE6.pdf", "Stacked Barplot (PDF)");
-                output.newFile(prefix + "stacked_barplot_panel_AE6.csv", "Barplot Data (CSV)");
-                break;
-            case "AQ_Stacked_Barplot_soil.R":
-                output.newFile(prefix + "stacked_barplot_soil.png", "Stacked Barplot (PNG)");
-                output.newFile(prefix + "stacked_barplot_soil.pdf", "Stacked Barplot (PDF)");
-                output.newFile(prefix + "stacked_barplot_soil.csv", "Barplot Data (CSV)");
-                break;
-            case "AQ_Stacked_Barplot_soil_multi.R":
-                output.newFile(prefix + "stacked_barplot_soil.png", "Stacked Barplot (PNG)");
-                output.newFile(prefix + "stacked_barplot_soil.pdf", "Stacked Barplot (PDF)");
-                output.newFile(prefix + "stacked_barplot_soil.csv", "Barplot Data (CSV)");
-                break;
-            case "AQ_Overlay_File.R":
-                output.newFile(prefix + "overlay.ncf", "PAVE Obs Overlay File (IOAPI file)");
-                break;
-            case "AQ_Monthly_Stat_Plot.R":
+            case "AQ_Monthly_Stat_Plot.R": //Year-long Monthly Statistics Plot (single network)
                 output.newFile(prefix + "plot1.pdf", "Obs/Mod Plot (PDF)");
                 output.newFile(prefix + "plot1.png", "Obs/Mod Plot (PNG)");
                 output.newFile(prefix + "stats.csv", "Monthly Stat File (CSV)");
-                output.newFile(prefix + "statsplot1.pdf", "NMB/NME/Corr Plot (PDF)");
-                output.newFile(prefix + "statsplot1.png", "NMB/NME/Corr Plot (PNG)");
-                output.newFile(prefix + "statsplot2.pdf", "MdnB/MdnE/RMSE Plot (PDF)");
-                output.newFile(prefix + "statsplot2.png", "MdnB/MdnE/RMSE Plot (PNG)");
+                output.newFile(prefix + "stats_plot1.pdf", "NMB/NME/Corr Plot (PDF)");
+                output.newFile(prefix + "stats_plot1.png", "NMB/NME/Corr Plot (PNG)");
+                output.newFile(prefix + "stats_plot2.pdf", "MdnB/MdnE/RMSE Plot (PDF)");
+                output.newFile(prefix + "stats_plot2.png", "MdnB/MdnE/RMSE Plot (PNG)");
                 break;
-            case "AQ_Plot_Spatial.R":
+//Spatial Plots
+            case "AQ_Stats_Plots.R": //Species Statistics and Spatial Plots (multi networks)
+                output.newFile(prefix + "stats.csv", "CSV Domain Wide Statistics File");
+                output.newFile(prefix + "sites_stats.csv", "CSV Site Specific Statistics File");
+                output.newFile(prefix + "hourly_stats.csv", "CSV Hourly Specific Statistics File");
+                output.newFile(prefix + "stats_data.csv", "Raw Query Data (CSV)");
+                output.newFile(prefix + "stats_plots.zip", "Zip File Containing All Files");
+                break;
+//            case "AQ_Stats_Plots.R":
+//                output.newFile(prefix + "stats_plot_NMB.png", "NMB (PNG)");
+//                output.newFile(prefix + "stats_plot_NME.png", "NME (PNG)");
+//                output.newFile(prefix + "stats_plot_MB.png", "MB (PNG)");
+//                output.newFile(prefix + "stats_plot_ME.png", "ME (PNG)");
+//                output.newFile(prefix + "stats_plot_FB.png", "FB (PNG)");
+//                output.newFile(prefix + "stats_plot_FE.png", "FE (PNG)");
+//                output.newFile(prefix + "stats_plot_RMSE.png", "RMSE (PNG)");
+//                output.newFile(prefix + "stats_plot_Corr.png", "Corr (PNG)");
+//                output.newFile(prefix + "stats_plot_NMB.pdf", "NMB (PDF)");
+//                output.newFile(prefix + "stats_plot_NME.pdf", "NME (PDF)");
+//                output.newFile(prefix + "stats_plot_MB.pdf", "MB (PDF)");
+//                output.newFile(prefix + "stats_plot_ME.pdf", "ME (PDF)");
+//                output.newFile(prefix + "stats_plot_FB.pdf", "FB (PDF)");
+//                output.newFile(prefix + "stats_plot_FE.pdf", "FE (PDF)");
+//                output.newFile(prefix + "stats_plot_RMSE.pdf", "RMSE (PDF)");
+//                output.newFile(prefix + "stats_plot_Corr.pdf", "Corr (PDF)");
+//                break;
+            case "AQ_Stats_Plots_leaflet.R": //Interactive Species Statistics and Spatial Plots (multi networks)
+                output.newFile(prefix + "stats.csv", "LINK to CSV Domain Wide Statistics File");
+                output.newFile(prefix + "sites_stats.csv", "LINK to CSV Site Specific Statistics File");
+                output.newFile(prefix + "stats_data.csv", "LINK to Raw Query Data (CSV)");
+                output.newFile(prefix + "stats_plots.zip", "LINK to Zip File Containing All Files (.zip)");
+                break;
+            case "AQ_Plot_Spatial.R": //Spatial Plot (multi networks)
                 output.newFile(prefix + "spatialplot_obs.png", "Obs (PNG)");
                 output.newFile(prefix + "spatialplot_mod.png", "Model (PNG)");
                 output.newFile(prefix + "spatialplot_diff.png", "Difference (PNG)");
@@ -1049,15 +1136,12 @@ public class AMETForm extends javax.swing.JFrame {
                 output.newFile(prefix + "spatialplot_diff.pdf", "Difference (PDF)");
                 output.newFile(prefix + "spatialplot_ratio.pdf", "Ratio (PDF)");
                 break;
-            case "AQ_Plot_Spatial_Ratio.R":
-                output.newFile(prefix + "spatialplot_ratio_obs.png", "Obs Spatial Plot (PNG)");
-                output.newFile(prefix + "spatialplot_ratio_mod.png", "Model Spatial Plot (PNG)");
-                output.newFile(prefix + "spatialplot_ratio_diff.png", "Difference Plot (PNG)");
-                output.newFile(prefix + "spatialplot_ratio_obs.pdf", "Obs Spatial Plot (PDF)");
-                output.newFile(prefix + "spatialplot_ratio_mod.pdf", "Model Spatial Plot (PDF)");
-                output.newFile(prefix + "spatialplot_ratio_diff.pdf", "Difference Plot (PDF)");
+            case "AQ_Plot_Spatial_leaflet.R": //Interactive Spatial Plot (multi networks)
+                output.newFile(prefix + "spatialplot_obs.html", "Obs (html)");
+                output.newFile(prefix + "spatialplot_mod.html", "Mod (html)");
+                output.newFile(prefix + "spatialplot_diff.html", "Diff (html)");
                 break;
-            case "AQ_Plot_Spatial_MtoM.R":
+            case "AQ_Plot_Spatial_MtoM.R": //Model/Model Diff Spatial Plot (multi network, multi run)
                 output.newFile(prefix + "spatialplot_MtoM_Diff_Avg.png", "MtoM Diff Avg Plot (PNG)");
                 output.newFile(prefix + "spatialplot_MtoM_Diff_Max.png", "MtoM Diff Max Plot (PNG)");
                 output.newFile(prefix + "spatialplot_MtoM_Diff_Min.png", "MtoM Diff Min Plot (PNG)");
@@ -1065,7 +1149,22 @@ public class AMETForm extends javax.swing.JFrame {
                 output.newFile(prefix + "spatialplot_MtoM_Diff_Max.pdf", "MtoM Diff Max Plot (PDF)");
                 output.newFile(prefix + "spatialplot_MtoM_Diff_Min.pdf", "MtoM Diff Min Plot (PDF)");
                 break;
-            case "AQ_Plot_Spatial_Diff.R":
+            case "AQ_Plot_Spatial_MtoM_leaflet.R": //Interactive Model/Model Diff Spatial Plot (multi network, multi run)
+                output.newFile(prefix + "spatialplot_mtom_diff_avg.html", "MtoM Avg Plot");
+                output.newFile(prefix + "spatialplot_mtom_diff_max.html", "MtoM Max Plot");
+                output.newFile(prefix + "spatialplot_mtom_diff_min.html", "MtoM Min Plot");
+                break;
+            case "AQ_Plot_Spatial_MtoM_Species.R": //Model/Model Species Diff Spatial Plot (multi network, multi run)
+                output.newFile(prefix2 + "spatialplot_mtom_species_diff_avg.png", "Avg Diff (PNG)");
+                output.newFile(prefix2 + "spatialplot_mtom_species_diff_max.png", "Max Diff (PNG)");
+                output.newFile(prefix2 + "spatialplot_mtom_species_diff_min.png", "Min Diff (PNG)");
+                output.newFile(prefix2 + "spatialplot_mtom_species_diff_perc.png", "Percent Diff (PNG)");
+                output.newFile(prefix2 + "spatialplot_mtom_species_diff_avg.pdf", "Avg Diff (PDF)");
+                output.newFile(prefix2 + "spatialplot_mtom_species_diff_max.pdf", "Max Diff (PDF)");
+                output.newFile(prefix2 + "spatialplot_mtom_species_diff_min.pdf", "Min Diff (PDF)");
+                output.newFile(prefix2 + "spatialplot_mtom_species_diff_perc.pdf", "Percent Diff (PDF)");
+                break;
+            case "AQ_Plot_Spatial_Diff.R": //Spatial Plot of Bias/Error Difference (multi network, multi run)
                 output.newFile(prefix + "spatial_plot_Bias_1.png", "Run 1 Bias Plot (PNG)");
                 output.newFile(prefix + "spatial_plot_Bias_1.pdf", "Run 1 Bias Plot (PDF)");
                 output.newFile(prefix + "spatial_plot_Error_1.png", "Run 1 Error Plot (PNG)");
@@ -1083,18 +1182,190 @@ public class AMETForm extends javax.swing.JFrame {
                 output.newFile(prefix + "spatial_plot_Error_Diff_Hist.pdf", "Error Diff Hist Plot (PDF)");
                 output.newFile(prefix + "spatial_plot_diff.csv", "Plot Data File (CSV)");
                 break;
-            case "AQ_Histogram.R":
-                output.newFile("", "");
+            case "AQ_Plot_Spatial_Diff_leaflet.R": //Interactive Spatial Plot of Bias/Error Difference (multi networks)
+                output.newFile(prefix + "spatialplot_bias_1.html", "Bias1");
+                output.newFile(prefix + "spatialplot_bias_2.html", "Bias2");
+                output.newFile(prefix + "spatialplot_bias_diff.html", "Bias Diff");
+                output.newFile(prefix + "spatialplot_error_1.html", "Error1");
+                output.newFile(prefix + "spatialplot_error_2.html", "Error2");
+                output.newFile(prefix + "spatialplot_error_diff.html", "Error Diff");
                 break;
-            case "AQ_Temporal_Plots.R":
-                output.newFile("", "");
+            case "AQ_Plot_Spatial_Ratio.R": //Ratio Spatial Plot to total PM2.5 (multi network, multi run)
+                output.newFile(prefix + "spatialplot_ratio_obs.png", "Obs Spatial Plot (PNG)");
+                output.newFile(prefix + "spatialplot_ratio_mod.png", "Model Spatial Plot (PNG)");
+                output.newFile(prefix + "spatialplot_ratio_diff.png", "Difference Plot (PNG)");
+                output.newFile(prefix + "spatialplot_ratio_obs.pdf", "Obs Spatial Plot (PDF)");
+                output.newFile(prefix + "spatialplot_ratio_mod.pdf", "Model Spatial Plot (PDF)");
+                output.newFile(prefix + "spatialplot_ratio_diff.pdf", "Difference Plot (PDF)");
                 break;
-            case "AQ_Spectal_Analysis.R":
-                output.newFile("", "");
+//Box Plots
+            case "AQ_Boxplot.R": //Boxplot (single network, multi run)
+                output.newFile(prefix + "boxplot_all.png", "Boxplot (PNG)");
+                output.newFile(prefix + "boxplot_all.pdf", "Boxplot (PDF)");
+                output.newFile(prefix + "boxplot_bias.png", "Bias Boxplot (PNG)");
+                output.newFile(prefix + "boxplot_bias.pdf", "Bias Boxplot (PDF)");
+                output.newFile(prefix + "boxplot_norm_bias.png", "Normalized Bias Boxplot (PNG)");
+                output.newFile(prefix + "boxplot_norm_bias.pdf", "Normalized Bias Boxplot (PDF)");
                 break;
+            case "AQ_Boxplot_ggplot.R": //GGPlot Boxplot (single network, multi run)
+                output.newFile(prefix + "boxplot_ggplot.png", "Boxplot (PNG)");
+                output.newFile(prefix + "boxplot_ggplot.pdf", "Boxplot (PDF)");
+                output.newFile(prefix + "boxplot_bias_ggplot.png", "Bias Boxplot (PNG)");
+                output.newFile(prefix + "boxplot_bias_ggplot.pdf", "Bias Boxplot (PDF)");
+                break;
+            case "AQ_Boxplot_plotly.R": //Plotly Boxplot (single network, multi run)
+                output.newFile(prefix + "boxplot.html", "Boxplot (HTML)");
+                output.newFile(prefix + "boxplot_bias.html", "Bias Boxplot (HTML)");
+                output.newFile(prefix + "boxplot_nmb.html", "NMB Boxplot (HTML)");
+                output.newFile(prefix + "boxplot.csv", "Data (CSV)");
+                break;
+            case "AQ_Boxplot_DofW.R": //Day of Week Boxplot (single network, multiple runs)
+                output.newFile(prefix + "boxplot_dow.pdf", "Day of Week Boxplot (PDF)");
+                output.newFile(prefix + "boxplot_dow.png", "Day of Week Boxplot (PNG)");
+                break;
+            case "AQ_Boxplot_Hourly.R": //Hourly Boxplot (single network, multiple runs)
+                output.newFile(prefix + "boxplot_hourly.pdf", "Boxplot (PDF format)");
+                output.newFile(prefix + "boxplot_hourly.png", "Boxplot (PNG format)");
+                output.newFile(prefix2 + "boxplot_data.csv", "Median Data (CSV format)");
+                break;
+            case "AQ_Boxplot_MDA8.R": //8hr Average Boxplot (single network, hourly data, can be slow)
+                output.newFile(prefix + "boxplot_MDA8.pdf", "MDA8 Boxplot (PDF)");
+                output.newFile(prefix + "boxplot_MDA8.png", "MDA8 Boxplot (PNG)");
+                break;
+            
+            case "AQ_Boxplot_Roselle.R": //Roselle Boxplot (single network, multiple simulations)
+                output.newFile(prefix + "boxplot_roselle.png", "Roselle Boxplot (PNG)");
+                output.newFile(prefix + "boxplot_bias_roselle.png", "Roselle Boxplot Bias (PNG)");
+                output.newFile(prefix + "boxplot_roselle.pdf", "Roselle Boxplot (PDF)");
+                output.newFile(prefix + "boxplot_bias_roselle.pdf", "Roselle Boxplot Bias (PDF)");
+                break;
+            case "AQ_Stacked_Barplot.R": //PM2.5 Stacked Bar Plot (CSN or IMPROVE, multi run)
+                output.newFile(prefix2 + "stacked_barplot.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot.csv", "Barplot Data (CSV)");
+                break;
+            case "AQ_Stacked_Barplot_AE6.R": //PM2.5 Stacked Bar Plot AE6 (CSN or IMPROVE, multi run)
+                output.newFile(prefix2 + "stacked_barplot_AE6.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot_AE6.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot_AE6.csv", "Barplot Data (CSV");
+                break;
+            case "AQ_Stacked_Barplot_AE6_plotly.R": //Interactive Stacked Bar Plot
+                output.newFile(prefix2 + "stacked_barplot_AE6.html", "Stacked Barplot (HTML)");
+                output.newFile(prefix2 + "stacked_barplot_AE6_data.csv", "Barplot Data (CSV)");
+                break;
+            case "AQ_Stacked_Barplot_AE6_ggplot.R": //GGPlot Stacked Bar Plot
+                output.newFile(prefix2 + "stacked_barplot_AE6_ggplot.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot_AE6_ggplot.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot_AE6_data_ggplot.csv", "Barplot Data (CSV)");
+                break;
+            case "AQ_Stacked_Barplot_AE6_ts.R": //Stacked Bar Plot Time Series
+                output.newFile(prefix2 + "stacked_barplot_AE6_ts.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot_AE6_ts.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot_AE6_ts.html", "Stacked Barplot (HTML)");
+                output.newFile(prefix2 + "stacked_barplot_AE6_data_ts.csv", "Barplot Data (CSV)");
+                break;
+            case "AQ_Stacked_Barplot_soil.R": //Soil Stacked Bar Plot (CSN or IMPROVE,multi run)
+                output.newFile(prefix2 + "stacked_barplot_soil.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot_soil.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot_soil.csv", "Barplot Data (CSV)");
+                break; 
+            case "AQ_Stacked_Barplot_soil_multi.R": //Soil Stacked Bar Plot Multi (CSN and IMPROVE,single run)
+                output.newFile(prefix2 + "stacked_barplot_soil.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot_soil.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot_soil.csv", "Barplot Data (CSV)");
+                break;
+            case "AQ_Stacked_Barplot_panel.R": //Multi-Panel Stacked Bar Plot (full year data required)
+                output.newFile(prefix2 + "stacked_barplot_panel.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot_panel.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot_panel.csv", "Barplot Data (CSV)");
+                break;
+            case "AQ_Stacked_Barplot_panel_AE6.R": //Multi-Panel Stacked Bar Plot AE6 (full year data)
+                output.newFile(prefix2 + "stacked_barplot_panel_AE6.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot_panel_AE6.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot_panel_AE6.csv", "Barplot Data (CSV)");
+                break;
+            case "AQ_Stacked_Barplot_panel_AE6_multi.R": //Multi-Panel, Mulit Run Stacked Bar Plot AE6 (full year data)
+                output.newFile(prefix2 + "stacked_barplot_panel_AE6.png", "Stacked Barplot (PNG)");
+                output.newFile(prefix2 + "stacked_barplot_panel_AE6.pdf", "Stacked Barplot (PDF)");
+                output.newFile(prefix2 + "stacked_barplot_panel_AE6.csv", "Barplot Data (CSV)");
+                break;
+//MISC Scripts
+            case "AQ_Kellyplot.R": //Kelly Plot (single species, single network, full year data)
+                output.newFile(prefix + "Kellyplot_NMB.png", "NMB (PNG)");
+                output.newFile(prefix + "Kellyplot_NME.png", "NME (PNG)");
+                output.newFile(prefix + "Kellyplot_MB.png", "MB (PNG)");
+                output.newFile(prefix + "Kellyplot_ME.png", "ME (PNG)");
+                output.newFile(prefix + "Kellyplot_RMSE.png", "RMSE (PNG)");
+                output.newFile(prefix + "Kellyplot_Corr.png", "Corr (PNG)");
+                output.newFile(prefix + "Kellyplot_NMB.pdf", "NMB (PDF)");
+                output.newFile(prefix + "Kellyplot_NME.pdf", "NME (PDF)");
+                output.newFile(prefix + "Kellyplot_MB.pdf", "MB (PDF)");
+                output.newFile(prefix + "Kellyplot_ME.pdf", "ME (PDF)");
+                output.newFile(prefix + "Kellyplot_RMSE.pdf", "RMSE (PDF)");
+                output.newFile(prefix + "Kellyplot_Corr.pdf", "Corr (PDF)");
+                break;
+            case "AQ_Kellyplot_multisim.R": //Multisim Kelly Plot (single species, single network, multi sim)
+                output.newFile(prefix + "Kellyplot_multi_NMB.png", "NMB (PNG)");
+                output.newFile(prefix + "Kellyplot_multi_NME.png", "NME (PNG)");
+                output.newFile(prefix + "Kellyplot_multi_MB.png", "MB (PNG)");
+                output.newFile(prefix + "Kellyplot_multi_ME.png", "ME (PNG)");
+                output.newFile(prefix + "Kellyplot_multi_RMSE.png", "RMSE (PNG)");
+                output.newFile(prefix + "Kellyplot_multi_Corr.png", "Corr (PNG)");
+                output.newFile(prefix + "Kellyplot_multi_NMB.pdf", "NMB (PDF)");
+                output.newFile(prefix + "Kellyplot_multi_NME.pdf", "NME (PDF)");
+                output.newFile(prefix + "Kellyplot_multi_MB.pdf", "MB (PDF)");
+                output.newFile(prefix + "Kellyplot_multi_ME.pdf", "ME (PDF)");
+                output.newFile(prefix + "Kellyplot_multi_FB.pdf", "FB (PDF)");
+                output.newFile(prefix + "Kellyplot_multi_FE.pdf", "FE (PDF)");
+                output.newFile(prefix + "Kellyplot_multi_RMSE.pdf", "RMSE (PDF)");
+                output.newFile(prefix + "Kellyplot_multi_Corr.pdf", "Corr (PDF)");
+                break;
+            case "AQ_Stats.R": //Species Statistics (multi species, single network)
+                output.newFile(prefix2 + "rawdata.csv", "Raw Network Data (CSV)");
+                break;
+            case "AQ_Raw_Data.R": //Create raw data csv file (single network, single simulation)
+                output.newFile(prefix2 + "rawdata.csv", "Raw Network Data (CSV)");
+                break;
+            case "AQ_Soccerplot.R": //Soccergoal plot (multiple networks)
+                output.newFile(prefix2 + "soccerplot.png", "Soccergoal Plot (PNG)");
+                output.newFile(prefix2 + "soccerplot.pdf", "Soccergoal Plot (PDF)");
+                break; 
+            case "AQ_Bugleplot.R": //"Bugle" plot (multiple networks)
+                output.newFile(prefix + "bugle_plot_bias.png", "Bugle Plot Bias (PNG)");
+                output.newFile(prefix + "bugle_plot_error.png", "Bugle Plot Error (PNG)");
+                output.newFile(prefix + "bugle_plot_error.pdf", "Bugle Plot Error (PDF)");
+                break;
+            case "AQ_Histogram.R": //Histogram (single network/species only)
+                output.newFile(prefix + "histogram.pdf", "Histogram (PDF)");
+                output.newFile(prefix + "histogram_bias.R", "Bias (PDF)");
+                break;
+            case "AQ_Temporal_Plots.R": //CDF, Q-Q, Taylor Plots (single network, multi run)
+                output.newFile(prefix + "ecdf.pdf", "ECDF (PDF)");
+                output.newFile(prefix + "qq.pdf", "QQ (PDF)");     
+                break;
+//Expiramental Scripts
+            case "AQ_Overlay_File.R": //Create PAVE/VERDI Obs Overlay File (hourly/daily data only)
+                output.newFile(prefix2 + "overlay.ncf", "PAVE Obs Overlay File (IOAPI file)");
+                break;
+            case "AQ_Scatterplot_log.R": //Log-Log Model/Ob Scatterplot (multiple networks)
+                output.newFile(prefix + "scatterplot_log.pdf", "Model/Ob Log-Log Scatterplot (PDF)");
+                output.newFile(prefix + "scatterplot_log.png", "Model/Ob Log-Log Scatterplot (PNG)");
+                output.newFile(prefix + "scatterplot_log.csv", "Scatterplot Data (CSV File)");
+                break;
+            case "AQ_Spectral_Analysis.R": //Spectral Analysis (single network, single run, experimental)
+                output.newFile(prefix + "spectrum.png", "(PNG)");
+                output.newFile(prefix + "spectrum.pdf", "(PDF)");
+                output.newFile(prefix + "spectrum_all.pdf", "(PDF)");
+                break;
+//            case "AQ_Plot_Spatial_Ratio.R": //PM Ratio Spatial Plot (multi network, single run)
+//                //TODO
+//                output.newFile(prefix + "", "");
+//                break;
             default:
-                break;  
+               errorWindow("Program does not exist", "Cannot generate output in outputWindow() method");
+               output.dispose();
         }
+        output.checkIfSuccess();
         output.setVisible(true);
     }
     
@@ -1105,6 +1376,7 @@ public class AMETForm extends javax.swing.JFrame {
     //Returns <""> for R if empty, e;se returns value
     public String checkBoxFormat(javax.swing.JCheckBox checkBox) {
         if (checkBox.isSelected()) {
+            isNetworkSelectedTemp = true;
             return "\"y\""; //read as return ""y""
         } else {
             return "\"\"";
@@ -1336,7 +1608,7 @@ public class AMETForm extends javax.swing.JFrame {
                 run_program = "AQ_Plot_Spatial_Ratio.R";
                 break;
             default:
-                errorWindow("Not a Valid Program", "This error is thrown when the run program combo box detects an input that is not associated with any program. Please make another selection.");
+                
         }
     }
     
@@ -1433,7 +1705,6 @@ public class AMETForm extends javax.swing.JFrame {
         String str = " and s.stat_id=d.stat_id";
         //states
         if (!state.equals("\"All\"")) { 
-            System.out.println(state);
             str = str + " and s.state=" + state;
         }
         //TODO
@@ -1643,6 +1914,15 @@ public class AMETForm extends javax.swing.JFrame {
             default:
                 break;
         }
+        
+        if (gSiteSelector) {
+            try {
+                str += gSiteSelector();
+            } catch(Exception e) {
+                //do nothing
+            }
+        }
+        
         //site_id or stat_id
         if (!site_id.equals("\"All\"")) {
             str = str + " and d.stat_id='" + site_id + "'";
@@ -1745,9 +2025,31 @@ public class AMETForm extends javax.swing.JFrame {
         
         query = str;
     }
+    
+    private String gSiteSelector() throws Exception {
+        String str = " and (";
+        
+        //from CSV
+        try {
+            String line = "";
+            BufferedReader br = new BufferedReader(new FileReader(siteFile));
+            while((line = br.readLine()) != null) {
+                String[] info = line.split(",");
+                str += "d.stat_id='" +  info[0] + "' or ";
+//                System.out.println(info[0]);
+                
+            }
+            str += "d.stat_id='none')";
+        } catch(Exception e) {
+            str = "";
+            e.printStackTrace();
+        }
+        return str;
+    }
+    
 
 //##############################################################################
-//    JSWING AUTO-GENERATED CODE : DO NOT EDIT
+//    JSWING AUTO-GENERATED CODE : DO NOT EDIT DIRECTLY
 //##############################################################################
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -1896,7 +2198,6 @@ public class AMETForm extends javax.swing.JFrame {
         widthLabel = new javax.swing.JLabel();
         heightTextField = new javax.swing.JTextField();
         widthTextField = new javax.swing.JTextField();
-        staticPNGCheckBox = new javax.swing.JCheckBox();
         plotlyImageSizeLabel = new javax.swing.JLabel();
         pngPlotQualityComboBox = new javax.swing.JComboBox<>();
         pngPlotQualityInfoLabel = new javax.swing.JTextArea();
@@ -1910,7 +2211,11 @@ public class AMETForm extends javax.swing.JFrame {
         customSQLQueryButton = new javax.swing.JButton();
         customSQLQueryLabel = new javax.swing.JLabel();
         spacialPlotButton = new javax.swing.JButton();
+        customSQLQueryButton1 = new javax.swing.JButton();
+        customSQLQueryLabel1 = new javax.swing.JLabel();
         runProgramButton1 = new javax.swing.JButton();
+        PNGCheckBox = new javax.swing.JCheckBox();
+        staticPNGCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -2020,7 +2325,7 @@ public class AMETForm extends javax.swing.JFrame {
                     .addGroup(databaseProjectPanelLayout.createSequentialGroup()
                         .addGap(22, 22, 22)
                         .addComponent(projectDetailsTextBox, javax.swing.GroupLayout.PREFERRED_SIZE, 605, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(320, Short.MAX_VALUE))
+                .addContainerGap(326, Short.MAX_VALUE))
         );
         databaseProjectPanelLayout.setVerticalGroup(
             databaseProjectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2212,7 +2517,7 @@ public class AMETForm extends javax.swing.JFrame {
                     .addComponent(worldRegionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(discoverWindowsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(stateInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
                 .addComponent(siteIDPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         regionAreaPanelLayout.setVerticalGroup(
@@ -2568,7 +2873,7 @@ public class AMETForm extends javax.swing.JFrame {
                     .addComponent(AQObservationNetworkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(AQObservationNetworkInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 329, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(AQObservationsNetworksPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
                 .addGroup(networkSpeciesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(europeanNetworksLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(europeanNetworksPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -2893,9 +3198,9 @@ public class AMETForm extends javax.swing.JFrame {
 
         widthLabel.setText("Width");
 
-        heightTextField.setText("NULL");
+        heightTextField.setText("900");
 
-        widthTextField.setText("NULL");
+        widthTextField.setText("1600");
 
         javax.swing.GroupLayout jPanel18Layout = new javax.swing.GroupLayout(jPanel18);
         jPanel18.setLayout(jPanel18Layout);
@@ -2919,8 +3224,6 @@ public class AMETForm extends javax.swing.JFrame {
                 .addComponent(heightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(widthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-
-        staticPNGCheckBox.setText("Create static PNG files from HTML files (can be slow)");
 
         plotlyImageSizeLabel.setText("Plotly Image Size");
         plotlyImageSizeLabel.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
@@ -2992,6 +3295,16 @@ public class AMETForm extends javax.swing.JFrame {
             }
         });
 
+        customSQLQueryButton1.setText("Custom Site List");
+        customSQLQueryButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                customSQLQueryButton1ActionPerformed(evt);
+            }
+        });
+
+        customSQLQueryLabel1.setText("Custom Site List");
+        customSQLQueryLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+
         javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
         jPanel19.setLayout(jPanel19Layout);
         jPanel19Layout.setHorizontalGroup(
@@ -2999,7 +3312,7 @@ public class AMETForm extends javax.swing.JFrame {
             .addGroup(jPanel19Layout.createSequentialGroup()
                 .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(advancedPlotSpcificationlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(customSQLQueryLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+                    .addComponent(customSQLQueryLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
                     .addGroup(jPanel19Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -3010,8 +3323,13 @@ public class AMETForm extends javax.swing.JFrame {
                             .addComponent(scatterPlotButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(soccergoalBugleButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(ametPlotAxisVutton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(customSQLQueryLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(jPanel19Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(customSQLQueryButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel19Layout.setVerticalGroup(
             jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -3034,7 +3352,11 @@ public class AMETForm extends javax.swing.JFrame {
                 .addComponent(customSQLQueryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(customSQLQueryButton)
-                .addContainerGap(314, Short.MAX_VALUE))
+                .addGap(23, 23, 23)
+                .addComponent(customSQLQueryLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(customSQLQueryButton1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         runProgramButton1.setText("Run Program");
@@ -3043,6 +3365,15 @@ public class AMETForm extends javax.swing.JFrame {
                 runProgramButton1ActionPerformed(evt);
             }
         });
+
+        PNGCheckBox.setText("Create PNG files (can be slow)");
+        PNGCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PNGCheckBoxActionPerformed(evt);
+            }
+        });
+
+        staticPNGCheckBox.setText("Create static PNG files from HTML files (can be slow)");
 
         javax.swing.GroupLayout programPanelLayout = new javax.swing.GroupLayout(programPanel);
         programPanel.setLayout(programPanelLayout);
@@ -3058,7 +3389,6 @@ public class AMETForm extends javax.swing.JFrame {
                             .addComponent(programToRunLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(pngPlotQualityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(customTitleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(staticPNGCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(plotlyImageSizeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(programToRunInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(programPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -3069,7 +3399,13 @@ public class AMETForm extends javax.swing.JFrame {
                                 .addComponent(customTitleTextField, javax.swing.GroupLayout.Alignment.LEADING))))
                     .addGroup(programPanelLayout.createSequentialGroup()
                         .addGap(110, 110, 110)
-                        .addComponent(runProgramButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(runProgramButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(programPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(PNGCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(programPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(staticPNGCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
                 .addComponent(jPanel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -3093,16 +3429,18 @@ public class AMETForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(staticPNGCheckBox)
+                .addComponent(PNGCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(staticPNGCheckBox)
+                .addGap(5, 5, 5)
                 .addComponent(pngPlotQualityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pngPlotQualityInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pngPlotQualityComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(105, 105, 105)
+                .addGap(76, 76, 76)
                 .addComponent(runProgramButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(122, Short.MAX_VALUE))
             .addComponent(jPanel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -3198,8 +3536,8 @@ public class AMETForm extends javax.swing.JFrame {
         try {
         File myFile = new File("./resources/Ozone_PCA_Regions.png");
         Desktop.getDesktop().open(myFile);
-        } catch (IOException e1) {
-           e1.printStackTrace();
+        } catch (IOException e) {
+           
         }  
     }//GEN-LAST:event_ozonePCALinkMouseClicked
 
@@ -3207,24 +3545,19 @@ public class AMETForm extends javax.swing.JFrame {
         try {
         File myFile = new File("./resources/Aerosol_PCA_Regions.png");
         Desktop.getDesktop().open(myFile);
-        } catch (IOException e1) {
-           e1.printStackTrace();
+        } catch (IOException e) {
+           
         } 
     }//GEN-LAST:event_aerosolPCALinkMouseClicked
 
     private void runProgramButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runProgramButton1ActionPerformed
-        //test code
-//        run_program = "AQ_Boxplot.R";
-//        project_id = 
-//        species = "O3_8hrmax_ob";
-//        pid = "676579";
-        //test code
-
         saveVariables();
-        checkVariables();
-        createRunInfo();
-        executeProgram();
-        outputWindow();
+        if (!checkVariables()) {
+            createRunInfo();
+            System.out.println(query);
+            executeProgram();
+            outputWindow();
+        }
     }//GEN-LAST:event_runProgramButton1ActionPerformed
 
     private void databaseSpecificationComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_databaseSpecificationComboBoxItemStateChanged
@@ -3236,9 +3569,7 @@ public class AMETForm extends javax.swing.JFrame {
         }
 
         //check to see if value has changed, issue with "ItemStateChange" calling twice
-        System.out.println("Called");
         if (dbase.equals(databaseSpecificationComboBox.getSelectedItem().toString())) { return; }
-        System.out.println("Executed");
         
         //Populates project Combo Boxes
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -3266,7 +3597,7 @@ public class AMETForm extends javax.swing.JFrame {
                 ResultSet rs = db.getRS();
                 ResultSetMetaData rsmd = rs.getMetaData();
                 
-                projectComboBox1.addItem(new ComboItem("Choose a Project", ""));
+                projectComboBox1.addItem(new ComboItem("Choose a Project", "Choose a Project"));
                 int columnsNumber = rsmd.getColumnCount();
                 while (rs.next()) {
                     String columnValue = rs.getString(1);
@@ -3363,10 +3694,7 @@ public class AMETForm extends javax.swing.JFrame {
             db.getDBConnection();
             db.query("USE " + dbase + ";");
             db.query("SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='" + dbase + "' and TABLE_NAME='" + project_id + "' and COLUMN_NAME like '%_ob'order by COLUMN_NAME");
-            
-//            System.out.println("SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='amad_CMAQ_v53_Dev' and TABLE_NAME='CMAQv531_2016fh_12US1_M3Dry_fixed_411BCs' and COLUMN_NAME like '%_ob'order by COLUMN_NAME");
-//            System.out.println("SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='" + dbase + "' and TABLE_NAME='" + project_id + "' and COLUMN_NAME like '%_ob'order by COLUMN_NAME");
-            
+
             ResultSet rs = db.getRS();
             ResultSetMetaData rsmd = rs.getMetaData();
             
@@ -3380,11 +3708,32 @@ public class AMETForm extends javax.swing.JFrame {
                     speciesComboBox.addItem(str);
                 }
         } catch (SQLException e) {
-            
+            errorWindow("SQLException", "Problem when trying to populate the species, table containing species possibly does not exist");
         }
         
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }//GEN-LAST:event_projectComboBox1ItemStateChanged
+
+    private void PNGCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PNGCheckBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PNGCheckBoxActionPerformed
+
+    private void customSQLQueryButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customSQLQueryButton1ActionPerformed
+        System.out.println("Selecting Root Directory");
+        JFileChooser fc = new JFileChooser();
+                    
+        //sets the default location to where the jar is
+        ProtectionDomain pd = AMETForm.class.getProtectionDomain();
+        CodeSource cs = pd.getCodeSource();
+        URL location = cs.getLocation();
+        File startDir = new File(location.toString());
+        fc.setCurrentDirectory(startDir);
+        
+        int returnVal = fc.showOpenDialog(this);
+        
+        siteFile = fc.getSelectedFile();
+        gSiteSelector = true;
+    }//GEN-LAST:event_customSQLQueryButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel AQObservationNetworkInfoLabel;
@@ -3394,6 +3743,7 @@ public class AMETForm extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> PCAComboBox;
     private javax.swing.JLabel PCAInfoLabel;
     private javax.swing.JLabel PCALabel;
+    private javax.swing.JCheckBox PNGCheckBox;
     private javax.swing.JComboBox<String> POCodeComboBox;
     private javax.swing.JTextArea POCodeInfoLabel;
     private javax.swing.JLabel POCodeLabel;
@@ -3435,7 +3785,9 @@ public class AMETForm extends javax.swing.JFrame {
     private javax.swing.JLabel climateRegionInfoLabel;
     private javax.swing.JCheckBox csnCheckBox;
     private javax.swing.JButton customSQLQueryButton;
+    private javax.swing.JButton customSQLQueryButton1;
     private javax.swing.JLabel customSQLQueryLabel;
+    private javax.swing.JLabel customSQLQueryLabel1;
     private javax.swing.JLabel customTitleLabel;
     private javax.swing.JTextField customTitleTextField;
     private javax.swing.JPanel databaseProjectPanel;
@@ -3569,5 +3921,33 @@ class ComboItem {
 
     public String getValue() {
         return value;
+    }
+}
+
+//class to assist in outputing the console when running system.exec()
+class StreamGobbler extends Thread
+{
+    InputStream is;
+    String type;
+    
+    StreamGobbler(InputStream is, String type)
+    {
+        this.is = is;
+        this.type = type;
+    }
+    
+    public void run()
+    {
+        try
+        {
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            String line=null;
+            while ( (line = br.readLine()) != null)
+                System.out.println(type + ">" + line);    
+            } catch (IOException ioe)
+              {
+                ioe.printStackTrace();  
+              }
     }
 }

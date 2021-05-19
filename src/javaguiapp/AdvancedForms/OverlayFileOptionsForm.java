@@ -1,21 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+//##############################################################################
+//  Creates a Overlay File Obtions Form
+//  
+//   
+//
+//  AUTHOR: Michael Dillon Sparks
+//##############################################################################
 package javaguiapp.AdvancedForms;
 
 import javaguiapp.AMETForm;
 
-/**
- *
- * @author Mdspa
- */
 public class OverlayFileOptionsForm extends javax.swing.JFrame {
 
-    /**
-     * Creates new form OverlayFileOptionsForm
-     */
     AMETForm form;
     public OverlayFileOptionsForm(AMETForm form) {
         this.form = form;

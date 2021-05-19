@@ -1,8 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+//##############################################################################
+//  Creates advanced species form
+//  
+//   
+//
+//  AUTHOR: Michael Dillon Sparks
+//##############################################################################
 package javaguiapp.AdvancedForms;
 
 import javaguiapp.AMETForm;

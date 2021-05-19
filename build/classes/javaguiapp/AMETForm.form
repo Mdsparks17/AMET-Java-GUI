@@ -146,7 +146,7 @@
                                   <Component id="projectDetailsTextBox" min="-2" pref="605" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="320" max="32767" attributes="0"/>
+                          <EmptySpace pref="326" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -367,7 +367,7 @@
                               <Component id="discoverWindowsComboBox" alignment="0" min="-2" pref="190" max="-2" attributes="0"/>
                               <Component id="stateInfoLabel" alignment="0" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="84" max="32767" attributes="0"/>
+                          <EmptySpace pref="90" max="32767" attributes="0"/>
                           <Component id="siteIDPanel" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -795,7 +795,7 @@
                               <Component id="AQObservationNetworkInfoLabel" alignment="0" min="-2" pref="329" max="-2" attributes="0"/>
                               <Component id="AQObservationsNetworksPanel" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="94" max="32767" attributes="0"/>
+                          <EmptySpace pref="100" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="europeanNetworksLabel" min="-2" pref="231" max="-2" attributes="0"/>
                               <Component id="europeanNetworksPanel" pref="0" max="32767" attributes="0"/>
@@ -1905,7 +1905,6 @@
                                       <Component id="programToRunLabel" alignment="0" min="-2" pref="231" max="-2" attributes="0"/>
                                       <Component id="pngPlotQualityLabel" alignment="0" min="-2" pref="231" max="-2" attributes="0"/>
                                       <Component id="customTitleLabel" alignment="0" min="-2" pref="231" max="-2" attributes="0"/>
-                                      <Component id="staticPNGCheckBox" alignment="0" min="-2" pref="346" max="-2" attributes="0"/>
                                       <Component id="plotlyImageSizeLabel" alignment="0" min="-2" pref="231" max="-2" attributes="0"/>
                                       <Component id="programToRunInfoLabel" min="-2" pref="385" max="-2" attributes="0"/>
                                       <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
@@ -1921,6 +1920,14 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="110" max="-2" attributes="0"/>
                                   <Component id="runProgramButton1" min="-2" pref="147" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="PNGCheckBox" min="-2" pref="346" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="staticPNGCheckBox" min="-2" pref="346" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace pref="89" max="32767" attributes="0"/>
@@ -1948,16 +1955,18 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jPanel18" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="staticPNGCheckBox" min="-2" max="-2" attributes="0"/>
+                          <Component id="PNGCheckBox" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="staticPNGCheckBox" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                           <Component id="pngPlotQualityLabel" min="-2" pref="24" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="pngPlotQualityInfoLabel" min="-2" pref="33" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="pngPlotQualityComboBox" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="105" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="76" max="-2" attributes="0"/>
                           <Component id="runProgramButton1" min="-2" pref="38" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace pref="122" max="32767" attributes="0"/>
                       </Group>
                       <Component id="jPanel19" alignment="0" max="32767" attributes="0"/>
                   </Group>
@@ -2140,21 +2149,16 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="heightTextField">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="NULL"/>
+                        <Property name="text" type="java.lang.String" value="900"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JTextField" name="widthTextField">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="NULL"/>
+                        <Property name="text" type="java.lang.String" value="1600"/>
                       </Properties>
                     </Component>
                   </SubComponents>
                 </Container>
-                <Component class="javax.swing.JCheckBox" name="staticPNGCheckBox">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Create static PNG files from HTML files (can be slow)"/>
-                  </Properties>
-                </Component>
                 <Component class="javax.swing.JLabel" name="plotlyImageSizeLabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Plotly Image Size"/>
@@ -2200,7 +2204,7 @@
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="advancedPlotSpcificationlabel" max="32767" attributes="0"/>
-                                  <Component id="customSQLQueryLabel" alignment="0" pref="448" max="32767" attributes="0"/>
+                                  <Component id="customSQLQueryLabel" alignment="0" pref="454" max="32767" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -2214,8 +2218,14 @@
                                       </Group>
                                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
+                                  <Component id="customSQLQueryLabel1" alignment="0" pref="454" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="customSQLQueryButton1" min="-2" pref="205" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2240,7 +2250,11 @@
                               <Component id="customSQLQueryLabel" min="-2" pref="24" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="customSQLQueryButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="314" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+                              <Component id="customSQLQueryLabel1" min="-2" pref="24" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="customSQLQueryButton1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2318,6 +2332,22 @@
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spacialPlotButtonActionPerformed"/>
                       </Events>
                     </Component>
+                    <Component class="javax.swing.JButton" name="customSQLQueryButton1">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Custom Site List"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="customSQLQueryButton1ActionPerformed"/>
+                      </Events>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="customSQLQueryLabel1">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Custom Site List"/>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="Tahoma" size="16" style="1"/>
+                        </Property>
+                      </Properties>
+                    </Component>
                   </SubComponents>
                 </Container>
                 <Component class="javax.swing.JButton" name="runProgramButton1">
@@ -2327,6 +2357,19 @@
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runProgramButton1ActionPerformed"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="PNGCheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Create PNG files (can be slow)"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PNGCheckBoxActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="staticPNGCheckBox">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Create static PNG files from HTML files (can be slow)"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

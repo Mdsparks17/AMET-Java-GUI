@@ -1,6 +1,12 @@
+//##############################################################################
+//  This is a class that abstracts the connection to a database. Uses 
+//  JDBC-Connector for MySQL
+//   
+//
+//  AUTHOR: Michael Dillon Sparks
+//##############################################################################
 package javaguiapp;
 
-  
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -9,23 +15,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DBConnection {
-
-    private static final String USERNAME = "";
-    private static final String PASSWORD = "";
-    private static final String CONN = "";
-    
+    Config config = new Config();
     public Connection con;
     public Statement stmt;
     public ResultSet rs;
 
     public void getDBConnection() throws SQLException {
         try {
-            con = DriverManager.getConnection(CONN, USERNAME, PASSWORD);
+            con = DriverManager.getConnection(config.conn, config.username, config.password);
             stmt = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 //            System.out.println("-Connected to the Database-");
         } catch (SQLException e) {
+            System.out.println("-Database Connection Failed-");
             e.printStackTrace();
-//            System.out.println("-Database Connection Failed-");
         }
     }
     
@@ -41,8 +43,8 @@ public class DBConnection {
             rs = stmt.executeQuery(query);
 //            System.out.println("-Executed Query-");
         } catch (SQLException e) {
-            e.printStackTrace();
 //            System.out.println("-Query Failed-");
+            e.printStackTrace();
         }
     }
     
@@ -62,8 +64,4 @@ public class DBConnection {
     public ResultSet getRS() {
         return rs;
     }
-    
-//    public String[] getRSArray() throws SQLException {
-//        return 
-//    }
 }
